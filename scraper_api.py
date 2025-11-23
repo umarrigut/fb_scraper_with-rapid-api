@@ -8,13 +8,8 @@ import os
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
-# Get API credentials from environment variables
-RAPID_API_KEY = os.getenv('RAPID_API_KEY')
-RAPID_API_HOST = os.getenv('RAPID_API_HOST', 'facebook-scraper3.p.rapidapi.com')
-
-# Validate that API key is set
-if not RAPID_API_KEY:
-    raise ValueError("RAPID_API_KEY environment variable is required. Please set it in Railway environment variables.")
+RAPID_API_KEY = os.getenv('RAPID_API_KEY', 'd5ea1c936bmshe54581a05d65368p113fc4jsn4b264c6d6615')
+RAPID_API_HOST = "facebook-scraper3.p.rapidapi.com"
 
 # Your Keywords
 KEYWORDS = [
@@ -74,6 +69,8 @@ def run_scraper():
 
                             # --- 3. TEXT CLEANING (Matches your N8N logic) ---
                             raw_text = post.get('message_rich', post.get('message', ''))
+                            if raw_text is None:
+                                raw_text = ''
                             # Remove URLs
                             clean_text = re.sub(r'https?://\S+', '', raw_text) 
                             # Replace newlines with spaces
@@ -81,7 +78,12 @@ def run_scraper():
                             # Remove extra spaces
                             clean_text = re.sub(r'\s+', ' ', clean_text).strip()
 
-                            # --- 4. BUILD FINAL OBJECT ---
+                            # --- 4. SKIP EMPTY POSTS ---
+                            # Only process posts that have actual text content
+                            if not clean_text or clean_text.strip() == '':
+                                continue
+                            
+                            # --- 5. BUILD FINAL OBJECT ---
                             # This matches EXACTLY what your Code Node expects
                             clean_post = {
                                 'post_text': clean_text,
@@ -117,5 +119,4 @@ def run_scraper():
     return jsonify(clean_data_list)
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=5000)
