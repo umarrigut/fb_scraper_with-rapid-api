@@ -8,8 +8,12 @@ import os
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
-RAPID_API_KEY = os.getenv('RAPID_API_KEY', 'd5ea1c936bmshe54581a05d65368p113fc4jsn4b264c6d6615')
+RAPID_API_KEY = os.getenv('RAPID_API_KEY')
 RAPID_API_HOST = "facebook-scraper3.p.rapidapi.com"
+
+# Validate that API key is set
+if not RAPID_API_KEY:
+    raise ValueError("RAPID_API_KEY environment variable is required. Please set it in Railway or your environment.")
 
 # Your Keywords
 KEYWORDS = [
