@@ -27,6 +27,11 @@ KEYWORDS = [
     "Just Phil Lyman"
 ]
 
+@app.route('/', methods=['GET'])
+def health_check():
+    """Health check endpoint for Railway"""
+    return jsonify({"status": "ok", "message": "Facebook Scraper API is running"}), 200
+
 @app.route('/scrape-facebook', methods=['GET'])
 def run_scraper():
     print("--- Starting Scrape Job ---")
@@ -123,4 +128,5 @@ def run_scraper():
     return jsonify(clean_data_list)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
